@@ -31,9 +31,21 @@ class ParticleFilter
 	// Flag, if filter is initialized
 	bool is_initialized;
 	
+	//PI
+	const double PI;
+
 	// Vector of weights of all particles
-	std::vector<double> weights;
+	//std::vector<double> weights;
 	
+	//transforms the current observation from the car's perspective to the particle's perspective
+	void transform_observation_perspective(const Particle& particle, const LandmarkObs& observation,  LandmarkObs& transformed_observation);
+
+	//find the landmark nearest to the transformed observation
+	Map::single_landmark_s find_nearest_landmark(const LandmarkObs& transformed_observation, const Map& map_landmarks);
+
+	//compute the transformed observation's weight
+	double compute_transformed_observation_weight(const LandmarkObs& transformed_observation, const Map::single_landmark_s& nearest_landmark, const std::vector<double> sigma_landmark);
+
     public:
 	
 	    // Set of current particles
@@ -41,7 +53,7 @@ class ParticleFilter
 
 	    // Constructor
 	    // @param M Number of particles
-	    ParticleFilter() : num_particles(0), is_initialized(false) {}
+	    ParticleFilter() : num_particles(0), is_initialized(false), PI(3.14159265358979) {}
 
 	    // Destructor
 	    ~ParticleFilter() {}
@@ -55,7 +67,7 @@ class ParticleFilter
          * @param std[] Array of dimension 3 [standard deviation of x [m], standard deviation of y [m]
          *   standard deviation of yaw [rad]]
          */
-        void init(double x, double y, double theta, std::vector<double> std);
+        void init(const double& x, const double& y, const double& theta, const std::vector<double>& sigma_pos);
 
         /**
          * prediction Predicts the state for the next time step
@@ -66,7 +78,7 @@ class ParticleFilter
          * @param velocity Velocity of car from t to t+1 [m/s]
          * @param yaw_rate Yaw rate of car from t to t+1 [rad/s]
          */
-        void prediction(double delta_t, std::vector<double> sigma_pos, double velocity, double yaw_rate);
+        void prediction(const double& delta_t, const std::vector<double>& sigma_pos, const double& velocity, const double& yaw_rate);
 
         /**
          * dataAssociation Finds which observations correspond to which landmarks (likely by using
@@ -85,7 +97,7 @@ class ParticleFilter
          * @param observations Vector of landmark observations
          * @param map Map class containing map landmarks
          */
-        void updateWeights(double sensor_range, std::vector<double> sigma_landmark, std::vector<LandmarkObs> observations, Map map_landmarks);
+        void updateWeights(const double& sensor_range, const std::vector<double>& sigma_landmark, const std::vector<LandmarkObs>& observations, const Map& map_landmarks);
 
         /**
          * resample Resamples from the updated set of particles to form
