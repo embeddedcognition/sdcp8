@@ -1,5 +1,3 @@
-//Udacity provided code
-
 /*
  * helper_functions.h
  * Some helper functions for the 2D particle filter.
